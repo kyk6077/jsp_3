@@ -10,6 +10,7 @@ import com.iu.board.BoardDAO;
 import com.iu.board.BoardDTO;
 import com.iu.page.RowNumber;
 import com.iu.util.DBConnector;
+import com.oreilly.servlet.MultipartRequest;
 
 public class NoticeDAO implements BoardDAO{
 
@@ -44,21 +45,56 @@ public class NoticeDAO implements BoardDAO{
 		return ntList;
 	}
 
-	@Override
-	public BoardDTO selectOne(int num) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	//selectOne
+	public NoticeDTO selectOne(int num) throws Exception{
+		Connection con = DBConnector.getConnect();
+		String sql = "select * from notice where num=? order by reg_date asc";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setInt(1, num);
+		
+		ResultSet rs = st.executeQuery();
+//		rs.get NoticeDTO 사용
+		NoticeDTO nt = new NoticeDTO();
+		if(rs.next()) {
+			nt.setNum(rs.getInt(1));
+			nt.setTitle(rs.getString(2));
+			nt.setContents(rs.getString(3));
+			nt.setWriter(rs.getString(4));
+			nt.setReg_date(rs.getDate(5));
+			nt.setHit(rs.getInt(6));
+		}
+		DBConnector.disConnect(rs, st, con);		
+		return nt;
 	}
-
-	@Override
-	public int insert(BoardDTO boardDTO) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+	//seq
+	public int getNum() throws Exception{
+		Connection con = DBConnector.getConnect();
+		String sql = "select notice_seq.nextval from dual";
+		PreparedStatement st =  con.prepareStatement(sql);
+		ResultSet rs = st.executeQuery();
+		rs.next();
+		int num = rs.getInt(1); 
+		DBConnector.disConnect(rs, st, con);
+		return num;
+	}
+	
+	//insert
+	public int insert(BoardDTO boardDTO) throws Exception{
+		Connection con = DBConnector.getConnect();
+		String sql = "Insert into notice values(?,?,?,?,sysdate,0)";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setInt(1, boardDTO.getNum());
+		st.setString(2, boardDTO.getTitle());
+		st.setString(3, boardDTO.getContents());
+		st.setString(4, boardDTO.getWriter());
+		int result = st.executeUpdate();
+		DBConnector.disConnect(st, con);
+		return result;
 	}
 
 	@Override
 	public int update(BoardDTO boardDTO) throws Exception {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 

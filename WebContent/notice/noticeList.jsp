@@ -34,12 +34,12 @@
 	Pager pager = mk.makePage(totalCount);
 	
 	
-	request.setAttribute("list", ar);
-	request.setAttribute("board", "notice");
-	request.setAttribute("pager", pager);
+// 	request.setAttribute("list", ar);
+// 	request.setAttribute("board", "notice");
+// 	request.setAttribute("pager", pager);
 	
-	RequestDispatcher view = request.getRequestDispatcher("../board/boardList.jsp");
-	view.forward(request, response);
+// 	RequestDispatcher view = request.getRequestDispatcher("../board/boardList.jsp");
+// 	view.forward(request, response);
 	
 	
 	
@@ -57,6 +57,21 @@
 	<div class="row">
 	</div>
 	<div class="row">
+		<div>
+			<form class="form-inline" action="./noticeList.jsp">
+				<div class="form-group">
+					<select class="form-control" id="sel1" name="kind">
+						<option>Title</option>
+						<option>Contents</option>
+						<option>Writer</option>
+					</select>
+					<input type="text"
+						class="form-control" id="search" placeholder="Enter search" name="search">
+				</div>
+				<button type="submit" class="btn btn-default">Search</button>
+			</form>
+		</div>
+	
 		<table class="table table-hover">
 			<tr>
 				<td>NUM</td>
@@ -68,7 +83,7 @@
 			<%for(BoardDTO boardDTO : ar){ %>
 			<tr>
 				<td><%= boardDTO.getNum() %></td>
-				<td><%= boardDTO.getTitle() %></td>
+				<td><a href="noticeSelectOne.jsp?num=<%= boardDTO.getNum() %>"><%= boardDTO.getTitle() %></a></td>
 				<td><%= boardDTO.getWriter() %></td>
 				<td><%= boardDTO.getReg_date() %></td>
 				<td><%= boardDTO.getHit() %></td>
@@ -101,7 +116,11 @@
 			</ul>
 		</div>
 	</div>
-
+	<div class="container-fluid">
+		<div class="row">
+			<a class="btn btn-warning" href="noticeWriteForm.jsp">Write</a>
+		</div>
+	</div>
 <jsp:include page="../temp/footer.jsp"></jsp:include>
 </body>
 </html>
