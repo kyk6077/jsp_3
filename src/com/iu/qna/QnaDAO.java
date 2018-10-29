@@ -64,9 +64,28 @@ public class QnaDAO implements BoardDAO, BoardReply {
 	}
 
 	@Override
-	public BoardDTO selectOne(int num) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public QnaDTO selectOne(int num) throws Exception {
+		QnaDTO qnaDTO = null;
+		Connection con = DBConnector.getConnect();
+		String sql = "select * from qna where num = ?";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setInt(1, num);
+		ResultSet rs = st.executeQuery();
+		if(rs.next()) {
+			qnaDTO = new QnaDTO();
+			qnaDTO.setNum(rs.getInt("num"));
+			qnaDTO.setTitle(rs.getString("title"));
+			qnaDTO.setContents(rs.getString("contents"));
+			qnaDTO.setWriter(rs.getString("writer"));
+			qnaDTO.setReg_date(rs.getDate("reg_date"));
+			qnaDTO.setHit(rs.getInt("hit"));
+			qnaDTO.setRef(rs.getInt("ref"));
+			qnaDTO.setStep(rs.getInt("step"));
+			qnaDTO.setDepth(rs.getInt("depth"));
+		}
+		
+		DBConnector.disConnect(rs, st, con);
+		return qnaDTO;
 	}
 
 	@Override
@@ -90,9 +109,9 @@ public class QnaDAO implements BoardDAO, BoardReply {
 	@Override
 	public int getCount(Search search) throws Exception {
 		Connection con = DBConnector.getConnect();
-		String sql = "select count(num) from qna where "+search.getKind()+" + like ?";
-		
+		String sql = "select count(num) from qna where "+search.getKind()+" like ?";
 		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, "%"+search.getSearch()+"%");
 		ResultSet rs = st.executeQuery();
 		rs.next();
 		int result = rs.getInt(1);

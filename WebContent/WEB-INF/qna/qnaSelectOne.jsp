@@ -4,9 +4,7 @@
 	pageEncoding="UTF-8"%>
 
 <%
-QnaDAO qnaDao = new QnaDAO();
-int num = Integer.parseInt(request.getParameter("num"));
-QnaDTO qnaDTO = qnaDao.selectOne(num);
+QnaDTO qnaDTO = (QnaDTO)request.getAttribute("dto");
 %>
 
 <!DOCTYPE html>
@@ -14,10 +12,10 @@ QnaDTO qnaDTO = qnaDao.selectOne(num);
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<jsp:include page="../temp/bootstrap.jsp"></jsp:include>
+<jsp:include page="../../temp/bootstrap.jsp"></jsp:include>
 </head>
 <body>
-	<jsp:include page="../temp/header.jsp"></jsp:include>
+	<jsp:include page="../../temp/header.jsp"></jsp:include>
 
 	<div class="container-fluid">
 		<h1 id="body_title">NOTICE</h1>
@@ -33,12 +31,12 @@ QnaDTO qnaDTO = qnaDao.selectOne(num);
 		</table>
 		<p id="content_main"><%=qnaDTO.getContents()%></p>
 		
-		<a class="btn btn-primary" href="./qnaList.jsp?num=<%=qnaDTO.getNum()%>">List</a> 
+		<a class="btn btn-primary" href="./qnaList.do?num=<%=qnaDTO.getNum()%>">List</a> 
 		<a class="btn btn-primary" href="./qnaUpdate.jsp?num=<%=qnaDTO.getNum()%>">Update</a>
 		<a class="btn btn-primary" href="./qnaDelete.jsp?num=<%=qnaDTO.getNum()%>">Delete</a>
 		<a class="btn btn-primary" href="./qnaReplyForm.jsp?num=<%=qnaDTO.getNum()%>">Reply</a>
 
 	</div>
-	<jsp:include page="../temp/footer.jsp"></jsp:include>
+	<jsp:include page="../../temp/footer.jsp"></jsp:include>
 </body>
 </html>

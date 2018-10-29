@@ -1,3 +1,4 @@
+<%@page import="com.iu.page.Pager"%>
 <%@page import="java.util.List"%>
 <%@page import="com.iu.qna.QnaDTO"%>
 <%@page import="java.util.ArrayList"%>
@@ -5,53 +6,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-	QnaDAO qnaDAO = new QnaDAO();
-	int curPage = 1;
-	String kind = request.getParameter("kind");
-	String search= request.getParameter("search");
-	
-	if(kind==null){
-		kind="title";
-	}
-	if(search==null){
-		search="";
-	}
-	try {
-		curPage = Integer.parseInt(request.getParameter("curPage"));
-	} catch (Exception e) {
-	}
-	int perPage = 10;
-	int startRow = (curPage - 1) * perPage + 1;
-	int lastRow = curPage * perPage;
-	List<QnaDTO> qnaList = qnaDAO.selectList(startRow, lastRow, kind, search);
-
-	//페이징
-	//1. 전체 글의 갯수
-	int totalCount = qnaDAO.getCount(kind,search);
-	//2. 전체 페이지의 갯수
-	int totalPage = totalCount / perPage;
-	if (totalCount % perPage != 0) {
-		totalPage = totalCount / perPage + 1;
-	}
-	//3. 전체 블럭의 갯수
-	int perBlock = 5;//블럭당 숫자의 갯수
-	int totalBlock = totalPage / perBlock;
-	if (totalPage % perBlock != 0) {
-		// 	totalBlock = totalPage/perBlock+1;
-		totalBlock += 1;
-	}
-	//4. curPage의 번호로 curBlock 구하기
-	int curBlock = curPage / perBlock;
-	if (curPage % perBlock != 0) {
-		curBlock = curPage / perBlock + 1;
-	}
-	//5. curBlock 번호로  startNum lastNum 구하기
-	int startNum = (curBlock - 1) * perBlock + 1;
-	int lastNum = curBlock * perBlock;
-
-	if (curBlock == totalBlock) {
-		lastNum = totalPage;
-	}
+	List<QnaDTO> ar = (List<QnaDTO>)request.getAttribute("list");
+	Pager pager = (Pager)request.getAttribute("pager");
 %>
 
 <!DOCTYPE html>
@@ -89,16 +45,16 @@
 				<td>hit</td>
 			</tr>
 			<%
-				for (int a=0; a<qnaList.size();a++) {
+				for (int a=0; a<ar.size();a++) {
 			%>
 			<tr>
-				<td><%=qnaList.get(a).getNum()%></td>
-				<td><a href="./qnaSelectOne.jsp?num=<%= qnaList.get(a).getNum()%>">
-					<%for(int i=0;i<qnaList.get(a).getDepth();i++){ %>--<%}%>
-					<%=qnaList.get(a).getTitle()%></a></td>
-				<td><%=qnaList.get(a).getWriter()%></td>
-				<td><%=qnaList.get(a).getReg_date()%></td>
-				<td><%=qnaList.get(a).getHit()%></td>
+				<td><%=ar.get(a).getNum()%></td>
+				<td><a href="./qnaSelectOne.jsp?num=<%= ar.get(a).getNum()%>">
+					<%for(int i=0;i<ar.get(a).getDepth();i++){ %>--<%}%>
+					<%=ar.get(a).getTitle()%></a></td>
+				<td><%=ar.get(a).getWriter()%></td>
+				<td><%=ar.get(a).getReg_date()%></td>
+				<td><%=ar.get(a).getHit()%></td>
 				
 			</tr>
 			<%
@@ -111,21 +67,21 @@
 	<div class="container-fluid">
 		<div class="row">
 			<ul class="pagination">
-				<li><a href="./qnaList.jsp?curPage=<%=1%>&kind=<%=kind%>&search=<%=search%>"><span
+				<li><a href="./qnaList.do?curPage=<%=1%>&kind=<%=pager.getSearch().getKind()%>&search=<%=pager.getSearch().getSearch()%>"><span
 						class="glyphicon glyphicon-backward"></span></a></li>
-				<%if (curBlock > 1) {%>
-				<li><a href="./qnaList.jsp?curPage=<%=startNum - 1%>&kind=<%=kind%>&search=<%=search%>"><span
+				<%if (pager.getCurBlock() > 1) {%>
+				<li><a href="./qnaList.do?curPage=<%=pager.getStartNum() - 1%>&kind=<%=pager.getSearch().getKind()%>&search=<%=pager.getSearch().getSearch()%>"><span
 						class="glyphicon glyphicon-chevron-left"></span></a></li>
 				<%}%>
-				<%for (int i = startNum; i <= lastNum; i++) {%>
-				<li><a href="./qnaList.jsp?curPage=<%=i%>&kind=<%=kind%>&search=<%=search%>"><%=i%></a></li>
+				<%for (int i = pager.getStartNum(); i <= pager.getLastNum(); i++) {%>
+				<li><a href="./qnaList.do?curPage=<%=i%>&kind=<%=pager.getSearch().getKind()%>&search=<%=pager.getSearch().getSearch()%>"><%=i%></a></li>
 				<%}%>
 
-				<%if (curBlock != totalBlock) {	%>
-				<li><a href="./qnaList.jsp?curPage=<%=lastNum + 1%>&kind=<%=kind%>&search=<%=search%>"><span
+				<%if (pager.getCurBlock() != pager.getTotalBlock()) {	%>
+				<li><a href="./qnaList.do?curPage=<%=pager.getLastNum() + 1%>&kind=<%=pager.getSearch().getKind()%>&search=<%=pager.getSearch().getSearch()%>"><span
 						class="glyphicon glyphicon-chevron-right"></span></a></li>
 				<%}%>
-				<li><a href="./qnaList.jsp?curPage=<%=totalPage%>&kind=<%=kind%>&search=<%=search%>"><span
+				<li><a href="./qnaList.do?curPage=<%=pager.getTotalPage()%>&kind=<%=pager.getSearch().getKind()%>&search=<%=pager.getSearch().getSearch()%>"><span
 						class="glyphicon glyphicon-forward"></span></a></li>
 			</ul>
 		</div>
