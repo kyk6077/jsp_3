@@ -90,8 +90,16 @@ public class QnaDAO implements BoardDAO, BoardReply {
 
 	@Override
 	public int insert(BoardDTO boardDTO) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		Connection con = DBConnector.getConnect();
+		String sql = "insert into qna values(qna_seq.nextval,?,?,?,sysdate,0,qna_seq.currval,0,0)";
+		PreparedStatement st = con.prepareStatement(sql);
+		st.setString(1, boardDTO.getTitle());
+		st.setString(2, boardDTO.getContents());
+		st.setString(3, boardDTO.getWriter());
+		int result = st.executeUpdate();
+		
+		DBConnector.disConnect(st, con);
+		return result;
 	}
 
 	@Override

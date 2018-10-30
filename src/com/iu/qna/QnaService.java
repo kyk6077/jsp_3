@@ -8,17 +8,49 @@ import javax.servlet.http.HttpServletResponse;
 import com.iu.action.ActionForward;
 import com.iu.board.BoardDTO;
 import com.iu.board.BoardReplyDTO;
+import com.iu.board.BoardService;
 import com.iu.page.MakePager;
 import com.iu.page.Pager;
 import com.iu.page.RowNumber;
 
-public class QnaService {
+public class QnaService implements BoardService{
 	private QnaDAO qnaDAO;
 	
 	public QnaService() {
 		qnaDAO = new QnaDAO();
 	}
 	
+	
+	
+	@Override
+	public ActionForward insert(HttpServletRequest request, HttpServletResponse response) {
+		ActionForward actionForward = new ActionForward();
+		
+//		qnaDAO.insert(boardDTO);
+		
+		
+		
+		return actionForward;
+	}
+
+
+
+	@Override
+	public ActionForward update(HttpServletRequest request, HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public ActionForward delete(HttpServletRequest request, HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
 	//selectList
 	public ActionForward selectList(HttpServletRequest request, HttpServletResponse response){
 		ActionForward actionForward = new ActionForward();
@@ -37,10 +69,10 @@ public class QnaService {
 			int totalCount = qnaDAO.getCount(rowNumber.getSearch());
 			Pager pager = makePager.makePage(totalCount);
 			List<BoardDTO> ar = qnaDAO.SelectList(rowNumber);
-			actionForward.setPath("../WEB-INF/qna/qnaList.jsp");
+			actionForward.setPath("../WEB-INF/view/board/boardList.jsp");
 			request.setAttribute("pager", pager);
 			request.setAttribute("list", ar);
-			
+			request.setAttribute("board", "qna");
 		} catch (Exception e) {
 			actionForward.setPath("../common/result.jsp");
 			request.setAttribute("message", "Fail");
@@ -60,7 +92,8 @@ public class QnaService {
 		try {
 			qnaDTO = qnaDAO.selectOne(num);
 			actionForward.setCheck(true);
-			actionForward.setPath("../WEB-INF/qna/qnaSelectOne.jsp");
+			actionForward.setPath("../WEB-INF/view/board/boardSelectOne.jsp");
+			request.setAttribute("board","qna");
 			request.setAttribute("dto", qnaDTO);
 		} catch (Exception e) {
 			actionForward.setCheck(false);

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.iu.action.ActionForward;
+import com.iu.board.BoardService;
 import com.iu.notice.NoticeService;
 
 /**
@@ -17,6 +18,8 @@ import com.iu.notice.NoticeService;
  */
 @WebServlet("/NoticeController")
 public class NoticeController extends HttpServlet {
+	
+
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -42,6 +45,8 @@ public class NoticeController extends HttpServlet {
 			actionForward = noticeService.selectList(request, response);
 		}else if(command.equals("/noticeSelectOne.do")) {
 			actionForward = noticeService.selectOne(request, response);
+		}else if(command.equals("/noticeWrite.do")) {
+			actionForward = noticeService.insert(request, response);
 		}
 		
 		if(actionForward.isCheck()) {
