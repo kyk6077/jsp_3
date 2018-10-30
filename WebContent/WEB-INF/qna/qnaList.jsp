@@ -49,7 +49,7 @@
 			%>
 			<tr>
 				<td><%=ar.get(a).getNum()%></td>
-				<td><a href="./qnaSelectOne.jsp?num=<%= ar.get(a).getNum()%>">
+				<td><a href="./qnaSelectOne.do?num=<%= ar.get(a).getNum()%>">
 					<%for(int i=0;i<ar.get(a).getDepth();i++){ %>--<%}%>
 					<%=ar.get(a).getTitle()%></a></td>
 				<td><%=ar.get(a).getWriter()%></td>

@@ -71,7 +71,6 @@ public class QnaService {
 			actionForward.setPath("./qna/qnalist.do");
 		}
 		
-		
 		return actionForward; 
 	}
 	
