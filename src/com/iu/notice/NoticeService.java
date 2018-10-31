@@ -94,16 +94,105 @@ public class NoticeService implements BoardService{
 
 	@Override
 	public ActionForward update(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		ActionForward actionForward = new ActionForward();
+		String method = request.getMethod();
+		
+		if(method.equals("POST")) {
+			//DB Update
+			int max=1024*1024*10;
+			String path = request.getServletContext().getRealPath("upload");
+			File file = new File(path);
+			if(!file.exists()) {
+				file.mkdirs();
+			}
+			
+			try {
+				MultipartRequest multi = new MultipartRequest(request, path, max, "UTF-8", new DefaultFileRenamePolicy());
+				NoticeDTO noticeDTO = new NoticeDTO();
+				noticeDTO.setNum(Integer.parseInt(multi.getParameter("num")));
+				noticeDTO.setTitle(multi.getParameter("title"));
+				noticeDTO.setContents(multi.getParameter("contents"));
+				//update
+				int result = noticeDAO.update(noticeDTO);
+				if(result>0) {
+					Enumeration<Object> e = multi.getFileNames();
+					FileDAO fileDAO = new FileDAO();
+					while(e.hasMoreElements()) {
+						FileDTO fileDTO = new FileDTO();
+						String key = (String)e.nextElement();
+						fileDTO.setOname(multi.getOriginalFileName(key));
+						fileDTO.setFname(multi.getFilesystemName(key));
+						fileDTO.setKind("N");
+						fileDTO.setNum(noticeDTO.getNum());
+						fileDAO.insert(fileDTO);
+						
+					}
+				
+					request.setAttribute("message", "Update Success");
+					request.setAttribute("path", "./noticeList.do");
+				}else {
+					//update 실패
+					request.setAttribute("message", "Update Fail");
+					request.setAttribute("path", "./noticeList.do");
+				}//if 끝
+				
+				
+			} catch (Exception e) {
+				request.setAttribute("message", "Update Fail");
+				request.setAttribute("path", "./noticeList.do");
+			}
+			
+			actionForward.setCheck(true);
+			actionForward.setPath("../WEB-INF/view/common/result.jsp");
+			
+		}else {
+			try {
+				int num = Integer.parseInt(request.getParameter("num"));
+				BoardDTO boardDTO = noticeDAO.selectOne(num);
+				FileDAO fileDAO = new FileDAO();
+				FileDTO fileDTO = new FileDTO();
+				fileDTO.setNum(num);
+				fileDTO.setKind("N");
+				List<FileDTO> ar = fileDAO.selectList(fileDTO);
+				request.setAttribute("files", ar);
+				request.setAttribute("dto", boardDTO);
+				request.setAttribute("board","notice" );
+				actionForward.setCheck(true);
+				actionForward.setPath("../WEB-INF/view/board/boardUpdate.jsp");
+				
+			} catch (Exception e) {
+				e.printStackTrace();	
+			}
+		}
+		return actionForward;
 	}
 
 
 
 	@Override
 	public ActionForward delete(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		return null;
+		ActionForward actionForward = new ActionForward();
+		try {
+			int num = Integer.parseInt(request.getParameter("num"));
+			FileDAO fileDAO = new FileDAO();
+			fileDAO.deleteAll(num);
+			num = noticeDAO.delete(num);
+			if(num>0) {
+				request.setAttribute("message", "Delete Success");
+				request.setAttribute("path", "./noticeList.do");
+			}else {
+				request.setAttribute("message", "Delete Fail");
+				request.setAttribute("path", "./noticeList.do");
+			}
+		} catch (Exception e) {
+			request.setAttribute("message", "Delete Fail");
+			request.setAttribute("path", "./noticeList.do");
+			e.printStackTrace();
+		}
+		
+		actionForward.setCheck(true);
+		actionForward.setPath("../WEB-INF/view/common/result.jsp");
+		return actionForward;
 	}
 
 
